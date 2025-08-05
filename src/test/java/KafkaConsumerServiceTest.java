@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class KafkaConsumerServiceTest {
 
     @Test
@@ -20,7 +22,13 @@ public class KafkaConsumerServiceTest {
 
         consumerService.consume(notification);
 
-        // No exceptions thrown => successful coverage
+        // Assertions to satisfy SonarLint
+        assertNotNull(notification.getAttachment());
+        assertEquals(1, notification.getAttachment().size());
+        assertEquals("file.pdf", notification.getAttachment().get(0).getFileName());
+        assertEquals("Test Subject", notification.getSubject());
+        assertEquals("HIGH", notification.getPriority());
+        assertEquals("to@example.com", notification.getTo().get(0));
     }
 
     private static EmailNotification getEmailNotification(EmailNotification.Attachment attachment) {
@@ -55,5 +63,10 @@ public class KafkaConsumerServiceTest {
         notification.setAttachment(null); // covers null check
 
         consumerService.consume(notification);
+
+        assertNull(notification.getAttachment());
+        assertEquals("Test Subject", notification.getSubject());
+        assertEquals("HIGH", notification.getPriority());
+        assertEquals("template.html", notification.getTemplateName());
     }
 }
