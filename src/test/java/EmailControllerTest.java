@@ -29,21 +29,49 @@ public class EmailControllerTest {
     }
 
     @Test
-    void testSendEmailReturnsSuccess() throws Exception {
-        String json = "{ \"subject\": \"Test\", \"to\": [\"test@example.com\"] }";
+    void testSendEmailWithFullJsonPayload() throws Exception {
+        String fullJson = """
+                {
+                    "to": ["recipient1@example.com", "recipient2@example.com"],
+                    "cc": ["cc1@example.com"],
+                    "bcc": ["bcc1@example.com"],
+                    "subject": "Notification Service Email",
+                    "body": "<p> This is a sample email body.</p>",
+                    "templateName": "welcome_template.html",
+                    "attachment": [
+                        { 
+                            "fileName": "example.pdf", 
+                            "fileType": "application/pdf", 
+                            "fileContent": "base64EncodedContentHere" 
+                        }
+                    ],
+                    "priority": "HIGH",
+                    "templateId": "welcome_email_template",
+                    "placeholders": { 
+                        "userName": "John Doe", 
+                        "activationLink": "https://example.com/activate" 
+                    }
+                }
+                """;
 
         mockMvc.perform(post("/email/send")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+                        .content(fullJson))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Email message sent to Kafka!"));
 
-        // Verify that producer.sendEmail() was called
+        // Capture and verify data sent to producer
         ArgumentCaptor<EmailNotification> captor = ArgumentCaptor.forClass(EmailNotification.class);
         verify(producer, times(1)).sendEmail(captor.capture());
 
-        assertEquals("Test", captor.getValue().getSubject());
-        assertEquals("test@example.com", captor.getValue().getTo().get(0));
+        EmailNotification captured = captor.getValue();
+        assertEquals("Notification Service Email", captured.getSubject());
+        assertEquals("HIGH", captured.getPriority());
+        assertEquals("recipient1@example.com", captured.getTo().get(0));
+        assertEquals("cc1@example.com", captured.getCc().get(0));
+        assertEquals("bcc1@example.com", captured.getBcc().get(0));
+        assertEquals("John Doe", captured.getPlaceholders().get("userName"));
+        assertEquals("example.pdf", captured.getAttachment().get(0).getFileName());
     }
 
     @Test
