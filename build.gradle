@@ -20,6 +20,7 @@ dependencies {
     // Lombok for data classes
     implementation 'org.projectlombok:lombok:1.18.28'
     implementation 'org.springframework.kafka:spring-kafka:3.3.8'
+    testImplementation 'org.springframework.kafka:spring-kafka-test:3.3.8'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test:3.5.4'
 }
