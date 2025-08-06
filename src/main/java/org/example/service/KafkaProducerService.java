@@ -24,15 +24,13 @@ public class KafkaProducerService {
 
     public void sendEmail(EmailNotification notification) {
         CompletableFuture<SendResult<String, EmailNotification>> future =
-                kafkaTemplate.send(TOPIC_NAME, notification);
+                kafkaTemplate.send("email-notification", notification);
 
         future.whenComplete((result, ex) -> {
             if (ex == null) {
-                RecordMetadata metadata = result.getRecordMetadata();
-                log.info("EmailNotification sent successfully to topic={} partition={} offset={}",
-                        metadata.topic(), metadata.partition(), metadata.offset());
+                log.info("Kafka success: {}", result.getRecordMetadata());
             } else {
-                log.error("Failed to send EmailNotification to Kafka topic={}", TOPIC_NAME, ex);
+                log.error("Kafka send failed", ex);
             }
         });
     }
