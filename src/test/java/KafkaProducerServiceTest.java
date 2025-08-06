@@ -9,9 +9,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class KafkaProducerServiceTest {
 
@@ -23,16 +21,25 @@ class KafkaProducerServiceTest {
         EmailNotification notification = new EmailNotification();
 
         // Success future
-        CompletableFuture<SendResult<String, EmailNotification>> successFuture = CompletableFuture.completedFuture(Mockito.mock(SendResult.class));
+        CompletableFuture<SendResult<String, EmailNotification>> successFuture =
+                CompletableFuture.completedFuture(Mockito.mock(SendResult.class));
+
+        // Failure future
+        CompletableFuture<SendResult<String, EmailNotification>> failureFuture =
+                new CompletableFuture<>();
+        failureFuture.completeExceptionally(new RuntimeException("Kafka send failed"));
+
+        // Need to mock send() separately for each call
         when(kafkaTemplate.send(eq("email-notification"), any(EmailNotification.class)))
-                .thenReturn(successFuture)
-                .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Kafka send failed")));
+                .thenReturn(successFuture) // First call
+                .thenReturn(failureFuture); // Second call
 
-        // Call once for success
+        // First call (success)
         producerService.sendEmail(notification);
-        // Call again for failure
+        // Second call (failure)
         producerService.sendEmail(notification);
 
+        // Verify send called twice
         verify(kafkaTemplate, times(2)).send("email-notification", notification);
     }
 }
