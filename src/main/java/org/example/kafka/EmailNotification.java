@@ -60,3 +60,34 @@ public class EmailNotification {
         public void setFileContent(String fileContent) { this.fileContent = fileContent; }
     }
 }
+
+
+{
+        "to": ["recipient1@example.com", "recipient2@example.com"],
+        "cc": ["cc1@example.com"],
+        "bcc": ["bcc1@example.com"],
+        "subject": "Notification Service Email",
+        "body": "<p>This is a sample email body.</p>",
+        "templateName": "welcome_template.html",
+        "attachment": [
+        {
+        "fileName": "document.pdf",
+        "fileType": "application/pdf",
+        "fileContent": "JVBERi0xLjQKJ..."
+        }
+        ],
+        "priority": "HIGH",
+        "templateId": "template-12345",
+        "placeholders": {
+        "username": "John Doe",
+        "date": "2025-08-06"
+        }
+        }
+
+
+
+        curl -X POST \
+        http://localhost:8090/email/send \
+        -H "Content-Type: application/json" \
+        -d @request.json
+
