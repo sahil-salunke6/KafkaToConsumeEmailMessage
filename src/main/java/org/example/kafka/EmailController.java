@@ -1,6 +1,7 @@
 package org.example.kafka;
 
 import org.example.service.KafkaProducerService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,8 +15,8 @@ public class EmailController {
     }
 
     @PostMapping("/send")
-    public String sendEmail(@RequestBody EmailNotification notification) {
+    public ResponseEntity<String> sendEmail(@RequestBody EmailNotification notification) {
         producer.sendEmail(notification);
-        return "Email message sent to Kafka!";
+        return ResponseEntity.ok("Email message sent to Kafka!");
     }
 }

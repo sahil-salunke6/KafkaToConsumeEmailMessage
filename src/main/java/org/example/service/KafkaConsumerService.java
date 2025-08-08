@@ -12,7 +12,7 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = "email-notification", groupId = "email-consumer-group")
     public void consume(EmailNotification notification) {
-        log.info("📥 Consumed Email Notification:");
+        log.info("Consumed Email Notification:");
         log.info("To: " + notification.getTo());
         log.info("CC: " + notification.getCc());
         log.info("BCC: " + notification.getBcc());
