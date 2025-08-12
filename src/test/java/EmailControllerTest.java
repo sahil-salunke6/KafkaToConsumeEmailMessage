@@ -35,22 +35,11 @@ public class EmailControllerTest {
                     "to": ["recipient1@example.com", "recipient2@example.com"],
                     "cc": ["cc1@example.com"],
                     "bcc": ["bcc1@example.com"],
-                    "subject": "Notification Service Email",
-                    "body": "<p> This is a sample email body.</p>",
+                    "subject": "Welcome to Our Service",
+                    "body": "<p>Hello, this is a test email!</p>",
                     "templateName": "welcome_template.html",
-                    "attachment": [
-                        { 
-                            "fileName": "example.pdf", 
-                            "fileType": "application/pdf", 
-                            "fileContent": "base64EncodedContentHere" 
-                        }
-                    ],
                     "priority": "HIGH",
-                    "templateId": "welcome_email_template",
-                    "placeholders": { 
-                        "userName": "John Doe", 
-                        "activationLink": "https://example.com/activate" 
-                    }
+                    "templateId": "template123"
                 }
                 """;
 
@@ -65,13 +54,13 @@ public class EmailControllerTest {
         verify(producer, times(1)).sendEmail(captor.capture());
 
         EmailNotification captured = captor.getValue();
-        assertEquals("Notification Service Email", captured.getSubject());
+        assertEquals("Welcome to Our Service", captured.getSubject());
         assertEquals("HIGH", captured.getPriority());
         assertEquals("recipient1@example.com", captured.getTo().get(0));
         assertEquals("cc1@example.com", captured.getCc().get(0));
         assertEquals("bcc1@example.com", captured.getBcc().get(0));
-        assertEquals("John Doe", captured.getPlaceholders().get("userName"));
-        assertEquals("example.pdf", captured.getAttachment().get(0).getFileName());
+        assertEquals("welcome_template.html", captured.getTemplateName());
+        assertEquals("template123", captured.getTemplateId());
     }
 
     @Test
