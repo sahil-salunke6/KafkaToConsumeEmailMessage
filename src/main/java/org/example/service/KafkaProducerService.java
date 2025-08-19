@@ -1,6 +1,6 @@
 package org.example.service;
 
-import org.example.kafka.EmailNotification;
+import org.example.model.EmailNotification;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 

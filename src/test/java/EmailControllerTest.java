@@ -1,5 +1,5 @@
-import org.example.kafka.EmailController;
-import org.example.kafka.EmailNotification;
+import org.example.controller.EmailController;
+import org.example.model.EmailNotification;
 import org.example.service.KafkaProducerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

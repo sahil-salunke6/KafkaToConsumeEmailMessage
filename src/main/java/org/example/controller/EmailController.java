@@ -1,5 +1,6 @@
-package org.example.kafka;
+package org.example.controller;
 
+import org.example.model.EmailNotification;
 import org.example.service.KafkaProducerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

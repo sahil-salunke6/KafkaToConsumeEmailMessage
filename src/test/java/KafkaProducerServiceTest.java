@@ -1,4 +1,4 @@
-import org.example.kafka.EmailNotification;
+import org.example.model.EmailNotification;
 import org.example.service.KafkaProducerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

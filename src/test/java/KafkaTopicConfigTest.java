@@ -1,7 +1,7 @@
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.example.kafka.EmailNotification;
-import org.example.kafka.KafkaTopicConfig;
+import org.example.model.EmailNotification;
+import org.example.config.KafkaTopicConfig;
 import org.junit.jupiter.api.Test;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.kafka.core.ConsumerFactory;

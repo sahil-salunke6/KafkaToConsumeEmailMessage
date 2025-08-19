@@ -1,57 +1,56 @@
-import org.example.kafka.EmailNotification;
+import org.example.model.EmailNotification;
 import org.example.service.KafkaConsumerService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class KafkaConsumerServiceTest {
+class KafkaConsumerServiceTest {
 
     @Test
     void testConsumeLogsAllFields() {
         KafkaConsumerService consumerService = new KafkaConsumerService();
 
-        EmailNotification.Attachment attachment = new EmailNotification.Attachment();
-        attachment.setFileName("file.pdf");
-        attachment.setFileType("application/pdf");
-        attachment.setFileContent("content");
-
-        EmailNotification notification = getEmailNotification(attachment);
+        EmailNotification notification = buildNotification();
 
         consumerService.consume(notification);
 
-        // Assertions to satisfy SonarLint
-        assertNotNull(notification.getAttachment());
-        assertEquals(1, notification.getAttachment().size());
-        assertEquals("file.pdf", notification.getAttachment().get(0).getFileName());
+        // Basic field assertions
         assertEquals("Test Subject", notification.getSubject());
         assertEquals("HIGH", notification.getPriority());
         assertEquals("to@example.com", notification.getTo().get(0));
-    }
-
-    private static EmailNotification getEmailNotification(EmailNotification.Attachment attachment) {
-        EmailNotification notification = new EmailNotification();
-        notification.setTo(List.of("to@example.com"));
-        notification.setCc(List.of("cc@example.com"));
-        notification.setBcc(List.of("bcc@example.com"));
-        notification.setSubject("Test Subject");
-        notification.setBody("Test Body");
-        notification.setTemplateName("template.html");
-        notification.setAttachment(List.of(attachment));
-        notification.setPriority("HIGH");
-        notification.setTemplateId("templateId");
-        notification.setPlaceholders(Map.of("key", "value"));
-        return notification;
+        assertEquals("cc@example.com", notification.getCc().get(0));
+        assertEquals("bcc@example.com", notification.getBcc().get(0));
+        assertEquals("Test Body", notification.getBody());
+        assertEquals("template.html", notification.getTemplateName());
+        assertEquals("templateId", notification.getTemplateId());
     }
 
     @Test
-    void testConsumeWithoutAttachments() {
+    void testConsumeWithMinimalFields() {
         KafkaConsumerService consumerService = new KafkaConsumerService();
 
         EmailNotification notification = new EmailNotification();
         notification.setTo(List.of("to@example.com"));
+        notification.setCc(List.of());
+        notification.setBcc(List.of());
+        notification.setSubject("No CC/BCC");
+        notification.setBody("Body without CC/BCC");
+        notification.setTemplateName("minimal.html");
+        notification.setPriority("LOW");
+        notification.setTemplateId("minimalId");
+
+        consumerService.consume(notification);
+
+        assertEquals("No CC/BCC", notification.getSubject());
+        assertEquals("LOW", notification.getPriority());
+        assertEquals("minimal.html", notification.getTemplateName());
+    }
+
+    private EmailNotification buildNotification() {
+        EmailNotification notification = new EmailNotification();
+        notification.setTo(List.of("to@example.com"));
         notification.setCc(List.of("cc@example.com"));
         notification.setBcc(List.of("bcc@example.com"));
         notification.setSubject("Test Subject");
@@ -59,14 +58,6 @@ public class KafkaConsumerServiceTest {
         notification.setTemplateName("template.html");
         notification.setPriority("HIGH");
         notification.setTemplateId("templateId");
-        notification.setPlaceholders(Map.of("key", "value"));
-        notification.setAttachment(null); // covers null check
-
-        consumerService.consume(notification);
-
-        assertNull(notification.getAttachment());
-        assertEquals("Test Subject", notification.getSubject());
-        assertEquals("HIGH", notification.getPriority());
-        assertEquals("template.html", notification.getTemplateName());
+        return notification;
     }
 }

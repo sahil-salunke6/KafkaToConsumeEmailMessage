@@ -1,4 +1,4 @@
-import org.example.kafka.KafkaUtil;
+import org.example.util.KafkaUtil;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
