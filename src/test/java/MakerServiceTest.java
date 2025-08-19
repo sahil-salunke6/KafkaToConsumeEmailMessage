@@ -10,7 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,28 +36,46 @@ class MakerServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        dto = new MakerRequestDTO();
-        dto.setId(1L);
-        dto.setRequestData("Test Request");
+        dto = new MakerRequestDTO(
+                1L,
+                101L,
+                "user123",
+                "MAKER",
+                LocalDateTime.now(),
+                "{\"key\":\"value\"}",
+                "PENDING",
+                "No comments",
+                "SERVICE_01"
+        );
 
         entity = new MakerRequestEntity();
-        entity.setId(1L);
-        entity.setRequestData("Test Request");
+        entity.setUniqueld(1L);
+        entity.setRequestId(101L);
+        entity.setUserId("user123");
+        entity.setUserRole("MAKER");
+        entity.setCreatedTimeStamp(dto.getCreatedTimeStamp());
+        entity.setRequestPayloadJson("{\"key\":\"value\"}");
+        entity.setApprovalStatus("PENDING");
+        entity.setComments("No comments");
+        entity.setRequestServiceld("SERVICE_01");
     }
 
     @Test
     void testCreateRequest() {
         // Arrange
         when(mapper.map(dto, MakerRequestEntity.class)).thenReturn(entity);
-        when(makerRepository.save(entity)).thenReturn(entity);
+        when(makerRepository.save(any(MakerRequestEntity.class))).thenReturn(entity);
         when(mapper.map(entity, MakerRequestDTO.class)).thenReturn(dto);
 
         // Act
         MakerRequestDTO result = makerService.createRequest(dto);
 
         // Assert
-        assertEquals(dto.getId(), result.getId());
-        assertEquals(dto.getRequestData(), result.getRequestData());
+        assertEquals(dto.getUniqueld(), result.getUniqueld());
+        assertEquals(dto.getRequestId(), result.getRequestId());
+        assertEquals(dto.getUserId(), result.getUserId());
+        assertEquals(dto.getUserRole(), result.getUserRole());
+        assertEquals(dto.getApprovalStatus(), result.getApprovalStatus());
 
         verify(mapper, times(1)).map(dto, MakerRequestEntity.class);
         verify(makerRepository, times(1)).save(entity);
@@ -66,8 +85,7 @@ class MakerServiceTest {
     @Test
     void testGetAllRequest() {
         // Arrange
-        List<MakerRequestEntity> entities = Arrays.asList(entity);
-        when(makerRepository.findAll()).thenReturn(entities);
+        when(makerRepository.findAll()).thenReturn(Collections.singletonList(entity));
         when(mapper.map(entity, MakerRequestDTO.class)).thenReturn(dto);
 
         // Act
@@ -75,8 +93,8 @@ class MakerServiceTest {
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals(dto.getId(), result.get(0).getId());
-        assertEquals(dto.getRequestData(), result.get(0).getRequestData());
+        assertEquals(dto.getUserId(), result.get(0).getUserId());
+        assertEquals(dto.getRequestServiceld(), result.get(0).getRequestServiceld());
 
         verify(makerRepository, times(1)).findAll();
         verify(mapper, times(1)).map(entity, MakerRequestDTO.class);
