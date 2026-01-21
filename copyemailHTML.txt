@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DSF Fee Schedule Approval</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: #000;
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 12px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <p>Hello <strong th:text="${PRIMARY_ACCOUNT_MANAGER}"></strong>,</p>
+
+    <p>
+        Please be advised that the following DSF fee schedule has been copied.
+        Please review and submit for approval.
+    </p>
+
+    <p><strong>Cusip Mapping (Old → New)</strong></p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Old Cusip</th>
+            <th>New Cusip</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cusip : ${cusipList}">
+            <td th:text="${cusip.oldCusip}"></td>
+            <td th:text="${cusip.newCusip}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>
+
+
+
+
+
+
+----------------------------------------------------------------------------------------
+
+
+
+Map<String, Object> model = new HashMap<>();
+model.put("PRIMARY_ACCOUNT_MANAGER", "John Doe");
+model.put("cusipList", cusipList);
+
+
+
+----------------------------------------------------------------------------------------
+
+
+
+public class DsfCopyEmail {
+
+    private String primaryAccountManager;
+    private List<CusipMapping> cusipList;
+
+}
+
+
+
+public class CusipMapping {
+
+    private String oldCusip;
+    private String newCusip;
+}
